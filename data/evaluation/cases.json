@@ -1,0 +1,164 @@
+{
+  "dataset_version": "1.1",
+  "description": "Golden semantic-query cases for the synthetic retail model.",
+  "cases": [
+    {
+      "id": "monthly_store_gmv_units",
+      "question": "按门店看上个月 GMV 和销量",
+      "intent": {"metrics": ["GMV", "UnitsSold"], "dimensions": ["Store"], "start_date": "2026-10-01", "end_date": "2026-11-01"},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV", "UnitsSold"],
+      "expected_dimensions": ["Store"],
+      "expected_rows": [
+        {"Store": "S-NORTH-01", "GMV": 150, "UnitsSold": 8},
+        {"Store": "S-SOUTH-01", "GMV": 70, "UnitsSold": 3}
+      ]
+    },
+    {
+      "id": "store_order_count",
+      "question": "各门店的订单数",
+      "intent": {"metrics": ["OrderCount"], "dimensions": ["Store"]},
+      "expected_status": "answered",
+      "expected_metrics": ["OrderCount"],
+      "expected_dimensions": ["Store"],
+      "expected_rows": [
+        {"Store": "S-NORTH-01", "OrderCount": 2},
+        {"Store": "S-SOUTH-01", "OrderCount": 1}
+      ]
+    },
+    {
+      "id": "top_store_gmv",
+      "question": "上个月 GMV 最大的门店",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "order_by": {"metric": "GMV", "direction": "desc"}, "limit": 1},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV"],
+      "expected_dimensions": ["Store"],
+      "assert_order": true,
+      "expected_rows": [{"Store": "S-NORTH-01", "GMV": 150}]
+    },
+    {
+      "id": "top_two_stores_by_gmv",
+      "question": "GMV 最高的前 2 家门店",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "order_by": {"metric": "GMV", "direction": "desc"}, "limit": 2},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV"],
+      "expected_dimensions": ["Store"],
+      "assert_order": true,
+      "expected_rows": [
+        {"Store": "S-NORTH-01", "GMV": 150},
+        {"Store": "S-SOUTH-01", "GMV": 70}
+      ]
+    },
+    {
+      "id": "lowest_store_gmv",
+      "question": "GMV 最低的门店",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "order_by": {"metric": "GMV", "direction": "asc"}, "limit": 1},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV"],
+      "expected_dimensions": ["Store"],
+      "assert_order": true,
+      "expected_rows": [{"Store": "S-SOUTH-01", "GMV": 70}]
+    },
+    {
+      "id": "top_order_count_dates_tie",
+      "question": "订单数最多的前 2 个日期",
+      "intent": {"metrics": ["OrderCount"], "dimensions": ["CalendarDate"], "order_by": {"metric": "OrderCount", "direction": "desc"}, "limit": 2},
+      "expected_status": "answered",
+      "expected_metrics": ["OrderCount"],
+      "expected_dimensions": ["CalendarDate"],
+      "assert_order": true,
+      "expected_rows": [
+        {"CalendarDate": "2026-10-03", "OrderCount": 1},
+        {"CalendarDate": "2026-10-05", "OrderCount": 1}
+      ]
+    },
+    {
+      "id": "top_five_stores_returns_available_groups",
+      "question": "GMV 最高的前 5 家门店",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "order_by": {"metric": "GMV", "direction": "desc"}, "limit": 5},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV"],
+      "expected_dimensions": ["Store"],
+      "assert_order": true,
+      "expected_rows": [
+        {"Store": "S-NORTH-01", "GMV": 150},
+        {"Store": "S-SOUTH-01", "GMV": 70}
+      ]
+    },
+    {
+      "id": "limit_without_metric_ordering",
+      "question": "按门店看 GMV，只显示 1 行",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "limit": 1},
+      "expected_status": "answered",
+      "expected_metrics": ["GMV"],
+      "expected_dimensions": ["Store"],
+      "assert_order": true,
+      "expected_rows": [{"Store": "S-NORTH-01", "GMV": 150}]
+    },
+    {
+      "id": "order_by_unselected_metric",
+      "question": "按门店看 GMV，但按销量排序",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "order_by": {"metric": "UnitsSold", "direction": "desc"}, "limit": 1},
+      "expected_status": "clarification_required",
+      "expected_correction": "排序指标必须包含在本次查询指标中。"
+    },
+    {
+      "id": "invalid_zero_limit",
+      "question": "按门店看 GMV，返回 0 行",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "limit": 0},
+      "expected_status": "clarification_required",
+      "expected_correction": "结果条数必须是 1 到 500 之间的整数。"
+    },
+    {
+      "id": "over_cap_limit",
+      "question": "按门店看 GMV，返回 501 行",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "limit": 501},
+      "expected_status": "clarification_required",
+      "expected_correction": "结果条数必须是 1 到 500 之间的整数。"
+    },
+    {
+      "id": "non_integer_limit",
+      "question": "按门店看 GMV，limit 设为 1.5",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Store"], "limit": 1.5},
+      "expected_status": "clarification_required",
+      "expected_correction": "结果条数必须是整数。"
+    },
+    {
+      "id": "units_by_product",
+      "question": "按商品看销量",
+      "intent": {"metrics": ["UnitsSold"], "dimensions": ["Product"]},
+      "expected_status": "answered",
+      "expected_metrics": ["UnitsSold"],
+      "expected_dimensions": ["Product"],
+      "expected_rows": [
+        {"Product": "全麦面包", "UnitsSold": 6},
+        {"Product": "纯牛奶", "UnitsSold": 1},
+        {"Product": "红富士苹果", "UnitsSold": 4}
+      ]
+    },
+    {
+      "id": "unsupported_gmv_by_product",
+      "question": "按商品统计 GMV",
+      "intent": {"metrics": ["GMV"], "dimensions": ["Product"]},
+      "expected_status": "clarification_required",
+      "failure_category": "unsupported_dimension",
+      "expected_correction": "Explain GMV has no product-level allocation rule; offer store or calendar date dimensions."
+    },
+    {
+      "id": "ambiguous_sales",
+      "question": "按门店看销售",
+      "intent": {"metrics": ["销售"], "dimensions": ["Store"]},
+      "expected_status": "clarification_required",
+      "failure_category": "ambiguous_metric",
+      "expected_correction": "Ask whether the user means GMV (交易额) or units sold (销量)."
+    },
+    {
+      "id": "unknown_profit_metric",
+      "question": "按门店看利润",
+      "intent": {"metrics": ["Profit"], "dimensions": ["Store"]},
+      "expected_status": "clarification_required",
+      "failure_category": "unknown_metric",
+      "expected_correction": "State that profit is not modeled and list the supported metrics."
+    }
+  ]
+}
