@@ -1,0 +1,23 @@
+{
+  "active_version": "1.0",
+  "versions": {
+    "1.0": {
+      "status": "active",
+      "registered_at": "2026-11-02T11:25:25+00:00",
+      "validation": {
+        "conforms": true,
+        "validated_at": "2026-11-02T11:25:25+00:00",
+        "report": "Validation Report\nConforms: True\n"
+      },
+      "published_at": "2026-11-02T11:25:25+00:00"
+    }
+  },
+  "history": [
+    {
+      "action": "publish",
+      "from": null,
+      "to": "1.0",
+      "at": "2026-11-02T11:25:25+00:00"
+    }
+  ]
+}
