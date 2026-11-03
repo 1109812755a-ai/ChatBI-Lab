@@ -1,0 +1,53 @@
+@prefix : <https://example.org/retail#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://example.org/retail/semantic-model/1.0> a owl:Ontology ;
+    rdfs:label "Retail semantic model 1.0"@en ;
+    owl:versionInfo "1.0" .
+
+# Physical fields used by the initial semantic metrics.
+:fieldOrderGmv a :SourceField ;
+    :fieldTable "fact_order" ;
+    :fieldName "gmv_amount" .
+
+:fieldOrderStatus a :SourceField ;
+    :fieldTable "fact_order" ;
+    :fieldName "status" .
+
+:fieldOrderId a :SourceField ;
+    :fieldTable "fact_order" ;
+    :fieldName "order_id" .
+
+:fieldLineQuantity a :SourceField ;
+    :fieldTable "fact_order_line" ;
+    :fieldName "quantity" .
+
+# GMV is intentionally unavailable by product until a line-level allocation rule exists.
+:GMV a :Metric ;
+    rdfs:label "GMV"@en, "商品交易总额"@zh ;
+    :metricDefinition "Completed-order merchandise value after line discounts and before shipping and refunds." ;
+    :metricExpression "SUM(fact_order.gmv_amount)" ;
+    :metricGrain "one row per order" ;
+    :metricFilter "fact_order.status = 'completed'" ;
+    :metricUsesField :fieldOrderGmv, :fieldOrderStatus ;
+    :metricSupportedDimension :Store, :CalendarDate .
+
+:OrderCount a :Metric ;
+    rdfs:label "Order count"@en, "订单数"@zh ;
+    :metricDefinition "Number of distinct completed orders." ;
+    :metricExpression "COUNT(DISTINCT fact_order.order_id)" ;
+    :metricGrain "one row per order" ;
+    :metricFilter "fact_order.status = 'completed'" ;
+    :metricUsesField :fieldOrderId, :fieldOrderStatus ;
+    :metricSupportedDimension :Store, :CalendarDate .
+
+:UnitsSold a :Metric ;
+    rdfs:label "Units sold"@en, "销量"@zh ;
+    :metricDefinition "Sum of ordered product quantities for completed orders." ;
+    :metricExpression "SUM(fact_order_line.quantity)" ;
+    :metricGrain "one row per order line" ;
+    :metricFilter "fact_order.status = 'completed'" ;
+    :metricUsesField :fieldLineQuantity, :fieldOrderStatus ;
+    :metricSupportedDimension :Store, :Product, :CalendarDate ;
+    :metricRequiresRelationship :containsLine, :refersToProduct, :hasOrder, :orderedOn .
