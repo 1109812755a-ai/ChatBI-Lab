@@ -1,0 +1,180 @@
+@prefix : <https://example.org/retail#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/retail> a owl:Ontology ;
+    rdfs:label "Retail data ontology"@en ;
+    rdfs:comment "Initial retail vocabulary and mappings for the synthetic data-agent project."@en ;
+    owl:versionInfo "1.0" .
+
+# Vocabulary used to annotate ontology concepts with the physical source model.
+:sourceTable a owl:AnnotationProperty ;
+    rdfs:label "source table"@en .
+:sourcePrimaryKey a owl:AnnotationProperty ;
+    rdfs:label "source primary key"@en .
+:sourceColumn a owl:AnnotationProperty ;
+    rdfs:label "source column"@en .
+:sourceGrain a owl:AnnotationProperty ;
+    rdfs:label "source grain"@en .
+:joinCondition a owl:AnnotationProperty ;
+    rdfs:label "source join condition"@en .
+
+# Retail business classes. The grain annotations make the relational source grain explicit.
+:Store a owl:Class ;
+    rdfs:label "Store"@en, "门店"@zh ;
+    rdfs:comment "A retail location that accepts customer orders."@en ;
+    :sourceTable "dim_store" ;
+    :sourcePrimaryKey "store_key" ;
+    :sourceGrain "one row per store"@en .
+
+:Order a owl:Class ;
+    rdfs:label "Order"@en, "订单"@zh ;
+    rdfs:comment "A customer purchase recorded by a retail store."@en ;
+    :sourceTable "fact_order" ;
+    :sourcePrimaryKey "order_id" ;
+    :sourceGrain "one row per order"@en .
+
+:OrderLine a owl:Class ;
+    rdfs:label "Order line"@en, "订单明细"@zh ;
+    rdfs:comment "One product line within an order."@en ;
+    :sourceTable "fact_order_line" ;
+    :sourcePrimaryKey "order_line_id" ;
+    :sourceGrain "one row per product line in an order"@en .
+
+:Product a owl:Class ;
+    rdfs:label "Product"@en, "商品"@zh ;
+    rdfs:comment "A retail product that can appear on an order line."@en ;
+    :sourceTable "dim_product" ;
+    :sourcePrimaryKey "product_key" ;
+    :sourceGrain "one row per product"@en .
+
+:CalendarDate a owl:Class ;
+    rdfs:label "Calendar date"@en, "日期"@zh ;
+    rdfs:comment "A calendar date used to group retail transactions."@en ;
+    :sourceTable "dim_date" ;
+    :sourcePrimaryKey "date_key" ;
+    :sourceGrain "one row per calendar date"@en .
+
+:Metric a owl:Class ;
+    rdfs:label "Business metric"@en, "业务指标"@zh ;
+    rdfs:comment "A governed measure with an explicit calculation meaning and data grain."@en .
+
+:SourceField a owl:Class ;
+    rdfs:label "Source field"@en, "来源字段"@zh ;
+    rdfs:comment "A physical field used by a business metric or semantic mapping."@en .
+
+# Business relationships and their relational join mappings.
+:hasOrder a owl:ObjectProperty ;
+    rdfs:label "has order"@en, "拥有订单"@zh ;
+    rdfs:domain :Store ;
+    rdfs:range :Order ;
+    :joinCondition "dim_store.store_key = fact_order.store_key" .
+
+:containsLine a owl:ObjectProperty ;
+    rdfs:label "contains order line"@en, "包含订单明细"@zh ;
+    rdfs:domain :Order ;
+    rdfs:range :OrderLine ;
+    :joinCondition "fact_order.order_id = fact_order_line.order_id" .
+
+:refersToProduct a owl:ObjectProperty ;
+    rdfs:label "refers to product"@en, "对应商品"@zh ;
+    rdfs:domain :OrderLine ;
+    rdfs:range :Product ;
+    :joinCondition "fact_order_line.product_key = dim_product.product_key" .
+
+:orderedOn a owl:ObjectProperty ;
+    rdfs:label "ordered on date"@en, "下单日期"@zh ;
+    rdfs:domain :Order ;
+    rdfs:range :CalendarDate ;
+    :joinCondition "fact_order.order_date_key = dim_date.date_key" .
+
+# Selected data properties and physical column mappings.
+:storeCode a owl:DatatypeProperty ;
+    rdfs:label "store code"@en, "门店编码"@zh ;
+    rdfs:domain :Store ;
+    rdfs:range xsd:string ;
+    :sourceColumn "dim_store.store_code" .
+
+:orderIdentifier a owl:DatatypeProperty ;
+    rdfs:label "order identifier"@en, "订单号"@zh ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:string ;
+    :sourceColumn "fact_order.order_id" .
+
+:orderStatus a owl:DatatypeProperty ;
+    rdfs:label "order status"@en, "订单状态"@zh ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:string ;
+    :sourceColumn "fact_order.status" .
+
+:orderGmvAmount a owl:DatatypeProperty ;
+    rdfs:label "order GMV amount"@en, "订单 GMV 金额"@zh ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:decimal ;
+    :sourceColumn "fact_order.gmv_amount" .
+
+:lineQuantity a owl:DatatypeProperty ;
+    rdfs:label "line quantity"@en, "明细数量"@zh ;
+    rdfs:domain :OrderLine ;
+    rdfs:range xsd:integer ;
+    :sourceColumn "fact_order_line.quantity" .
+
+:productName a owl:DatatypeProperty ;
+    rdfs:label "product name"@en, "商品名称"@zh ;
+    rdfs:domain :Product ;
+    rdfs:range xsd:string ;
+    :sourceColumn "dim_product.product_name" .
+
+:fullDate a owl:DatatypeProperty ;
+    rdfs:label "full date"@en, "完整日期"@zh ;
+    rdfs:domain :CalendarDate ;
+    rdfs:range xsd:date ;
+    :sourceColumn "dim_date.full_date" .
+
+# Semantic-layer metadata vocabulary.
+:metricExpression a owl:DatatypeProperty ;
+    rdfs:label "metric expression"@en, "指标表达式"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range xsd:string .
+
+:metricGrain a owl:DatatypeProperty ;
+    rdfs:label "metric grain"@en, "指标粒度"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range xsd:string .
+
+:metricFilter a owl:DatatypeProperty ;
+    rdfs:label "metric filter"@en, "指标过滤条件"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range xsd:string .
+
+:metricDefinition a owl:DatatypeProperty ;
+    rdfs:label "metric definition"@en, "指标定义"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range xsd:string .
+
+:fieldTable a owl:DatatypeProperty ;
+    rdfs:label "field table"@en, "字段所在表"@zh ;
+    rdfs:domain :SourceField ;
+    rdfs:range xsd:string .
+
+:fieldName a owl:DatatypeProperty ;
+    rdfs:label "field name"@en, "字段名"@zh ;
+    rdfs:domain :SourceField ;
+    rdfs:range xsd:string .
+
+:metricUsesField a owl:ObjectProperty ;
+    rdfs:label "metric uses source field"@en, "指标使用来源字段"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range :SourceField .
+
+:metricSupportedDimension a owl:ObjectProperty ;
+    rdfs:label "metric supports dimension"@en, "指标支持维度"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range owl:Class .
+
+:metricRequiresRelationship a owl:ObjectProperty ;
+    rdfs:label "metric requires relationship"@en, "指标需要业务关系"@zh ;
+    rdfs:domain :Metric ;
+    rdfs:range owl:ObjectProperty .
