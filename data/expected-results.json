@@ -1,0 +1,36 @@
+{
+  "reference_date": "2026-11-02",
+  "period": {
+    "start": "2026-10-01",
+    "end_exclusive": "2026-11-01"
+  },
+  "metric_policy": {
+    "gmv": "sum completed order-level gmv_amount; net of line discounts and before shipping/refunds",
+    "order_count": "count distinct completed order_id",
+    "units_sold": "sum order-line quantity for completed orders"
+  },
+  "expected_by_store": [
+    {
+      "store_code": "S-NORTH-01",
+      "gmv": 150.0,
+      "order_count": 2,
+      "units_sold": 8
+    },
+    {
+      "store_code": "S-SOUTH-01",
+      "gmv": 70.0,
+      "order_count": 1,
+      "units_sold": 3
+    }
+  ],
+  "expected_totals": {
+    "gmv": 220.0,
+    "order_count": 3,
+    "units_sold": 11
+  },
+  "incorrect_naive_join_gmv_by_store": {
+    "S-NORTH-01": 250.0,
+    "S-SOUTH-01": 140.0,
+    "explanation": "Summing the order-level GMV after joining to order lines multiplies each order by its number of lines."
+  }
+}
