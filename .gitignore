@@ -1,0 +1,12 @@
+.env
+.venv/
+.idea/
+.agents/
+openspec/
+__pycache__/
+*.py[cod]
+data/retail.sqlite
+data/evaluation/bad-cases.jsonl
+data/evaluation/latest-summary.json
+ontology/untitled-ontology-4
+ontology/versions/untitled-ontology-4
