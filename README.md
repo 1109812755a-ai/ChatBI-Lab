@@ -1,6 +1,6 @@
 # ChatBI Lab
 
-ChatBI Lab 是一个探索本体如何增强 ChatBI 的开源实验项目，以合成零售数据为实验场，实践 AI-native、Agent-native 的问数与评估流程。项目覆盖业务概念建模、RDF/OWL 本体、SHACL 校验、版本发布和 DeepAgents 自然语言问数；不连接多点生活或其他真实业务系统。
+ChatBI Lab 是一个探索本体如何增强 ChatBI 的开源实验项目，以合成零售数据为实验场，实践 AI-native、Agent-native 的问数与评估流程。项目覆盖业务概念建模、RDF/OWL 本体、SHACL 校验、版本发布和 DeepAgents 自然语言问数。
 
 ## 从建模到 Agent 回答
 
@@ -64,6 +64,8 @@ py -3.11 -m venv .venv
 预期结果是北城门店 GMV 150、销量 8；南城门店 GMV 70、销量 3。演示日期固定为 2026-11-02，因此“上个月”是 2026 年 10 月。
 
 ## 浏览器工作台
+
+![ChatBI Lab 问数工作台](docs/images/chatbi-workbench.png)
 
 启动本地 Streamlit 页面（只监听本机回环地址）：
 
