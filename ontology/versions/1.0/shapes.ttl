@@ -1,0 +1,85 @@
+@prefix : <https://example.org/retail#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:RetailClassMappingShape a sh:NodeShape ;
+    sh:targetSubjectsOf :sourceTable ;
+    sh:property [
+        sh:path :sourceTable ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each mapped retail concept must name exactly one source table."@en
+    ] ;
+    sh:property [
+        sh:path :sourcePrimaryKey ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each mapped retail concept must name exactly one source primary key."@en
+    ] ;
+    sh:property [
+        sh:path :sourceGrain ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Each mapped retail concept must state its source grain."@en
+    ] .
+
+:MetricShape a sh:NodeShape ;
+    sh:targetClass :Metric ;
+    sh:property [
+        sh:path :metricDefinition ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each metric must have one human-readable business definition."@en
+    ] ;
+    sh:property [
+        sh:path :metricExpression ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each metric must have one query expression."@en
+    ] ;
+    sh:property [
+        sh:path :metricGrain ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each metric must declare its native data grain."@en
+    ] ;
+    sh:property [
+        sh:path :metricFilter ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each metric must declare its required filters."@en
+    ] ;
+    sh:property [
+        sh:path :metricUsesField ;
+        sh:minCount 1 ;
+        sh:class :SourceField ;
+        sh:message "Each metric must reference at least one mapped source field."@en
+    ] ;
+    sh:property [
+        sh:path :metricSupportedDimension ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "Each metric must declare at least one supported dimension."@en
+    ] .
+
+:SourceFieldShape a sh:NodeShape ;
+    sh:targetClass :SourceField ;
+    sh:property [
+        sh:path :fieldTable ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each source field must name exactly one table."@en
+    ] ;
+    sh:property [
+        sh:path :fieldName ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Each source field must name exactly one column."@en
+    ] .
